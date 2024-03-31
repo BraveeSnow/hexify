@@ -9,6 +9,7 @@ use args::HexifyArgs;
 use clap::Parser;
 use env_logger::Env;
 use image::process_image;
+use log::info;
 use palette::parser::get_color_palette;
 
 fn main() -> io::Result<()> {
@@ -28,6 +29,8 @@ fn main() -> io::Result<()> {
             .into(),
         rgbs,
     );
+
+    info!("Saving image to {}", args.output);
 
     Ok(processed_image
         .save(args.output.to_owned())

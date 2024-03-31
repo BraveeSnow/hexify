@@ -1,9 +1,12 @@
 use image::RgbImage;
+use log::info;
 
 use crate::palette::types::RGB;
 
 pub fn process_image(img: RgbImage, palette: Vec<RGB>) -> RgbImage {
     let mut processed = RgbImage::new(img.width(), img.height());
+
+    info!("Got image with dimensions {}x{}", img.width(), img.height());
 
     for i in 0..img.width() {
         for j in 0..img.height() {
