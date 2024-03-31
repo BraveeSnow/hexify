@@ -1,3 +1,4 @@
+mod algorithm;
 mod args;
 mod image;
 mod palette;
@@ -12,6 +13,8 @@ use image::process_image;
 use log::{error, info};
 use palette::parser::get_color_palette;
 
+use crate::algorithm::ProcessingSettings;
+
 fn main() -> io::Result<()> {
     let args = HexifyArgs::parse();
     env_logger::builder()
@@ -24,22 +27,24 @@ fn main() -> io::Result<()> {
 
     if rgbs.len() == 0 {
         error!("Palette is empty, terminating...");
-        return Ok(())
+        return Ok(());
     }
 
     let img_path = PathBuf::from(args.image);
     if !img_path.exists() {
-        error!("Source image {} does not exist, terminating...", img_path.display());
-        return Ok(())
+        error!(
+            "Source image {} does not exist, terminating...",
+            img_path.display()
+        );
+        return Ok(());
     }
 
     let processed_image = process_image(
-        Reader::open(img_path)
-            .unwrap()
-            .decode()
-            .unwrap()
-            .into(),
+        &Reader::open(img_path).unwrap().decode().unwrap().into(),
         rgbs,
+        ProcessingSettings {
+            average_radius: args.average,
+        },
     );
 
     info!("Saving image to {}", args.output);
