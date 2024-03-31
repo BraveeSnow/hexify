@@ -9,7 +9,7 @@ use args::HexifyArgs;
 use clap::Parser;
 use env_logger::Env;
 use image::process_image;
-use log::info;
+use log::{error, info};
 use palette::parser::get_color_palette;
 
 fn main() -> io::Result<()> {
@@ -21,8 +21,20 @@ fn main() -> io::Result<()> {
 
     let palette_path = PathBuf::from(args.palette);
     let rgbs = get_color_palette(&palette_path);
+
+    if rgbs.len() == 0 {
+        error!("Palette is empty, terminating...");
+        return Ok(())
+    }
+
+    let img_path = PathBuf::from(args.image);
+    if !img_path.exists() {
+        error!("Source image {} does not exist, terminating...", img_path.display());
+        return Ok(())
+    }
+
     let processed_image = process_image(
-        Reader::open(PathBuf::from(args.image))
+        Reader::open(img_path)
             .unwrap()
             .decode()
             .unwrap()

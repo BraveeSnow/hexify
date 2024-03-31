@@ -1,5 +1,7 @@
 use std::{fs, path::Path};
 
+use log::error;
+
 use super::types::{PaletteSettings, RGB};
 
 // Defining a Color Scheme JSON File
@@ -11,11 +13,8 @@ pub fn get_color_palette(json_path: &Path) -> Vec<RGB> {
     let json_raw = fs::read_to_string(json_path);
 
     if let Err(err) = json_raw {
-        panic!(
-            "Unable to read from file {}: {}",
-            json_path.to_str().unwrap_or("{unknown}"),
-            err
-        );
+        error!("Unable to read from palette file: {}", err);
+        return Vec::new();
     }
 
     let mut color_palette: Vec<RGB> = Vec::new();
